@@ -58,7 +58,7 @@ class FFM:
         try:
             game_updating = self.driver.find_element_by_css_selector("div.Copy-zj3yf2-0.bktLPz")
         except:
-            pass
+            game_updating = None
         if game_updating:
             print("*****************************************************************************************")
             print("\tThe game is being updated.")
@@ -77,9 +77,9 @@ class FFM:
             print("login successful!")
             self.extract_leagues()
         else:
-            print("##################################")
-            print("Error: Invalid Email or Password!")
-            print("##################################")
+            print("*****************************************************************************************")
+            print("\t\tError: Invalid Email or Password!")
+            print("*****************************************************************************************")
             time.sleep(10)
             sys.exit()
 
@@ -103,9 +103,9 @@ class FFM:
         if self.league_link:
             self.extract_standings()
         else:
-            print("##################################")
-            print("Error: League not found!")
-            print("##################################")
+            print("*****************************************************************************************")
+            print("\t\tError: League not found!")
+            print("*****************************************************************************************")
             time.sleep(300)
             sys.exit()
 
@@ -202,8 +202,8 @@ class FFM:
                     }
                     print(data)
                     # self.details.append(data)
-                    gw_filename_by_rank = f"{self.league_name}_by_gameweek_rank.csv"
-                    self.append_csv(data, gw_filename_by_rank)
+                    gw_filename_unsorted = f"{self.league_name}_unsorted_and_duplicate.csv"
+                    self.append_csv(data, gw_filename_unsorted)
 
                 page_links = self.driver.find_elements_by_css_selector(
                     "a.ButtonLink__StyledButtonLink-sc-457mfk-1.jDfjsN")
@@ -226,15 +226,14 @@ class FFM:
                     break
 
         # print(self.details)
-        self.read_csv(f"{self.league_name}_by_gameweek_rank.csv")
+        self.read_csv(f"{self.league_name}_unsorted_and_duplicate.csv")
         removing_duplicate_time = time.time()
-        self.details = [i for n, i in enumerate(
-            self.details) if i not in self.details[n + 1:]]
+        self.details = [i for n, i in enumerate(self.details) if i not in self.details[n + 1:]]
         print("\n")
         print(
             f"Time for removing duplicate records is: {self.time_elapsed(removing_duplicate_time, time.time())}")
-        #rank_filename_csv = f"{self.league_name}_by_rank.csv"
-        #self.write_csv(self.details, rank_filename_csv)
+        rank_filename_csv = f"{self.league_name}_by_rank.csv"
+        self.write_csv(self.details, rank_filename_csv)
         sorted_details = self.sort_by_gameweek()
         gw_filename_sorted = f"{self.league_name}_by_gameweek_points.csv"
         self.write_csv(sorted_details, gw_filename_sorted)
